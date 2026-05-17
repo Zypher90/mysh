@@ -1,3 +1,4 @@
+use std::fmt::{format, write, Display, Formatter};
 use super::tokens::Token;
 #[derive(Debug)]
 pub struct Command {
@@ -18,6 +19,13 @@ impl Command {
     }
 }
 
+impl Display for Command {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        todo!()
+        // write!(f, "Command: --\nargs: {:?}\nfile_stdin: {}\nfile_stdout: {}\nappend: {}\n--", args, self.file_stdin.unwrap(), self.file_stdout.unwrap(), self.append)
+    }
+}
+
 #[derive(Debug)]
 pub struct Pipeline {
     commands: Vec<Command>,
@@ -30,6 +38,12 @@ impl Pipeline {
             commands: Vec::new(),
             background_status: false
         }
+    }
+}
+
+impl Display for Pipeline {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        write!(f, "{:?}", self.commands)
     }
 }
 
