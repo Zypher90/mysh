@@ -1,7 +1,8 @@
-mod tokens;
+mod decl;
 
 use std::error::Error;
 use std::io::{self, stdin, Write};
+use decl::{tokens::tokenize, parser::parse_tokens};
 
 fn main() -> Result<(), Box<dyn Error>>{
     let mut buffer = String::new();
@@ -20,13 +21,16 @@ fn main() -> Result<(), Box<dyn Error>>{
         }
         buffer = buffer.trim().to_string();
         if buffer.is_empty() {continue}
-        match buffer.as_str() {
-            "exit" => {
-                println!("Exiting mysh...");
-                break;
-            },
-            s => {println!("Would execute: {}", s)}
-        }
+        // match buffer.as_str() {
+        //     "exit" => {
+        //         println!("Exiting mysh...");
+        //         break;
+        //     },
+        //     s => {println!("Would execute: {}", s)}
+        // }
+        let tokens = tokenize(&buffer);
+        let pipeline = parse_tokens(&tokens).unwrap();
+        println!("{:?}", pipeline);
     }
     Ok(())
 }

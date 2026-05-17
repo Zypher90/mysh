@@ -1,7 +1,7 @@
 use std::iter::Peekable;
 use std::str::Chars;
 
-enum Token {
+pub enum Token {
     Word(String),
     Pipe,
     RedirectIn,
@@ -77,7 +77,7 @@ fn read_double_quoted(chars: &mut Peekable<Chars>) -> String {
     word
 }
 
-fn tokenize(input: &str) -> Vec<Token> {
+pub fn tokenize(input: &str) -> Vec<Token> {
     let mut chars = input.chars().peekable();
     let mut tokens = Vec::new();
 
