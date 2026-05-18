@@ -2,7 +2,7 @@ use std::fmt::{format, write, Display, Formatter};
 use super::tokens::Token;
 #[derive(Debug)]
 pub struct Command {
-    argv: Vec<String>,
+    pub(crate) argv: Vec<String>,
     file_stdin: Option<String>,
     file_stdout: Option<String>,
     append: bool
@@ -28,7 +28,7 @@ impl Display for Command {
 
 #[derive(Debug)]
 pub struct Pipeline {
-    commands: Vec<Command>,
+    pub commands: Vec<Command>,
     background_status: bool
 }
 

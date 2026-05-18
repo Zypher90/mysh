@@ -1,5 +1,7 @@
 mod decl;
+mod exec;
 
+use std::env;
 use std::error::Error;
 use std::io::{self, stdin, Write};
 use decl::{tokens::tokenize, parser::parse_tokens};
@@ -7,7 +9,7 @@ use decl::{tokens::tokenize, parser::parse_tokens};
 fn main() -> Result<(), Box<dyn Error>>{
     let mut buffer = String::new();
     loop {
-        print!("mysh>>");
+        print!("mysh@{}>>", env::current_dir()?.display());
         io::stdout().flush().expect("Failed to flush output stream");
         buffer.clear();
         match stdin().read_line(&mut buffer){
