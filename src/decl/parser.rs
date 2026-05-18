@@ -3,9 +3,9 @@ use super::tokens::Token;
 #[derive(Debug)]
 pub struct Command {
     pub(crate) argv: Vec<String>,
-    file_stdin: Option<String>,
-    file_stdout: Option<String>,
-    append: bool
+    pub(crate) file_stdin: Option<String>,
+    pub(crate) file_stdout: Option<String>,
+    pub(crate) append: bool
 }
 
 impl Command {
