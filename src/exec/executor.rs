@@ -1,14 +1,14 @@
 use std::env;
-use std::error::Error;
 use std::fs::{File, OpenOptions};
 use std::io::{Read, Write};
 use std::path::Path;
 use crate::decl::parser::{Command, Pipeline};
+use super::resolution::{resolve_path, list_dir};
 
 fn change_dir(commands: &Vec<String>) {
     let path = Path::new(commands[1].as_str());
 
-    if!env::set_current_dir(path).is_ok() {
+    if !env::set_current_dir(path).is_ok() {
         eprintln!("Invalid path provided");
     }
 }
@@ -50,14 +50,31 @@ fn echo_builtin(command : &Command) {
     eprintln!("{}", output.unwrap_or(&"".to_string()));
 }
 
-fn execute_external(program: &str) {
+fn execute_external(command: &mut Command) {
+    let program = resolve_path(&command.argv[0]);
+    let mut child = match program {
+        Some(t) => {
+            std::process::Command::new(&t)
+                .args(&command.argv[1..])
+                .spawn()
+                .expect("Failed to spawn command")
+        }
+        None => {
+            command.argv.insert(0, "/C".to_string());
+            std::process::Command::new("cmd")
+                .args(&command.argv[..])
+                .spawn()
+                .expect("Failed to spawn command")
+        }
+    };
 
+    let status = child.wait().expect("Failed to exit child");
+    if(!status.success()) {
+        eprintln!("Process exited with status: {:?}", status.code());
+    }
 }
 
-fn list_dir(command: &Command) {
-
-}
-fn execute_command(command: &Command) {
+pub fn execute_command(command: &mut Command) {
     let Some(program) = command.argv.first() else{
         return;
     };
@@ -67,11 +84,11 @@ fn execute_command(command: &Command) {
         "cd" => change_dir(&command.argv),
         "echo" => echo_builtin(&command),
         "ls" => list_dir(&command),
-        _ => execute_external(program)
+        _ => execute_external(command)
     }
 }
 pub fn execute(pipeline: Pipeline) {
-    for command in pipeline.commands {
-        execute_command(&command);
+    for mut command in pipeline.commands {
+        execute_command(&mut command);
     }
 }
