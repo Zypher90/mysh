@@ -16,16 +16,6 @@ pub fn resolve_path(program: &str) -> Option<PathBuf> {
     }
     let extensions = env::var("PATHEXT").unwrap_or(".EXE;.BAT;.CMD;.COM".to_string());
     let path_var = env::var("PATH").unwrap_or_default();
-    // if let Some(path_var) = env::var_os("PATH"){
-    //     for path in env::split_paths(&path_var){
-    //         for ext in extensions.split(";") {
-    //             let full_path = path.join(format!("{}{}", program, ext));
-    //             if is_executable(&full_path) || full_path.is_file() {
-    //                 return Some(path);
-    //             }
-    //         }
-    //     }
-    // }
     for dir in path_var.split(";") {
         for ext in extensions.split(";") {
             let candidate = PathBuf::from(dir)

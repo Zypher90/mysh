@@ -10,7 +10,7 @@ A Unix shell implementation written in Rust, built from scratch. This project co
 |---|---|---|
 | 1 | REPL loop | 🔨 In progress |
 | 2 | Lexer & parser | 🔨 In progress |
-| 3 | Command execution | 📋 Planned |
+| 3 | Command execution | 🔨 In progress |
 | 4 | Pipelines & I/O redirection | 📋 Planned |
 | 5 | Built-in commands | 📋 Planned |
 | 6 | Job control & signals | 📋 Planned |
@@ -36,6 +36,7 @@ A Unix shell implementation written in Rust, built from scratch. This project co
 - Job control: `fg`, `bg`, signal handling (`Ctrl-C`, `Ctrl-Z`)
 - Command history and tab completion
 - Shell variables and `$VAR` expansion
+- Multiple OS support
 
 ---
 

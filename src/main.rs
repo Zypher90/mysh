@@ -25,13 +25,6 @@ fn main() -> Result<(), Box<dyn Error>>{
         }
         buffer = buffer.trim().to_string();
         if buffer.is_empty() {continue}
-        // match buffer.as_str() {
-        //     "exit" => {
-        //         println!("Exiting mysh...");
-        //         break;
-        //     },
-        //     s => {println!("Would execute: {}", s)}
-        // }
         let tokens = tokenize(&buffer);
         let pipeline = parse_tokens(&tokens).unwrap();
         if(!pipeline.commands.is_empty()) {
