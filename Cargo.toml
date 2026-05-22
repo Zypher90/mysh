@@ -6,3 +6,4 @@ edition = "2024"
 [dependencies]
 is_executable = "1.0.5"
 walkdir = "2.5.0"
+log = "0.4.29"

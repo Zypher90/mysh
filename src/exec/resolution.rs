@@ -2,6 +2,7 @@ use std::{env, io, fs};
 use std::path::{Path, PathBuf};
 use is_executable::is_executable;
 use walkdir::WalkDir;
+use log::log;
 use crate::decl::parser::Command;
 
 pub fn resolve_path(program: &str) -> Option<PathBuf> {
@@ -13,14 +14,25 @@ pub fn resolve_path(program: &str) -> Option<PathBuf> {
             return None;
         }
     }
-    let extensions = vec![".exe", ".bat", ".cmd", ""];
-    if let Some(path_var) = env::var_os("PATH"){
-        for path in env::split_paths(&path_var){
-            for ext in &extensions {
-                let full_path = path.join(format!("{}{}", program, ext));
-                if is_executable(&full_path) || full_path.is_file() {
-                    return Some(path);
-                }
+    let extensions = env::var("PATHEXT").unwrap_or(".EXE;.BAT;.CMD;.COM".to_string());
+    let path_var = env::var("PATH").unwrap_or_default();
+    // if let Some(path_var) = env::var_os("PATH"){
+    //     for path in env::split_paths(&path_var){
+    //         for ext in extensions.split(";") {
+    //             let full_path = path.join(format!("{}{}", program, ext));
+    //             if is_executable(&full_path) || full_path.is_file() {
+    //                 return Some(path);
+    //             }
+    //         }
+    //     }
+    // }
+    for dir in path_var.split(";") {
+        for ext in extensions.split(";") {
+            let candidate = PathBuf::from(dir)
+                .join(format!("{}{}", program, ext));
+            if candidate.exists() {
+                println!("DEBUG: {:?}", candidate);
+                return Some(candidate);
             }
         }
     }
@@ -39,7 +51,7 @@ pub fn list_dir(command: &Command) {
                     into_iter().
                     filter_map(|x| x.ok())
                 {
-                    println!("{}", entry.path().display());
+                    println!("{}", entry.path().strip_prefix(&path_buf).unwrap().display());
                 }
             }else if command.argv[1] == "-r" {
                 for entry in WalkDir::new(&path_buf).
@@ -47,7 +59,7 @@ pub fn list_dir(command: &Command) {
                     into_iter().
                     filter_map(|x| x.ok())
                 {
-                    println!("{}", entry.path().display());
+                    println!("{}", entry.path().strip_prefix(&path_buf).unwrap().display());
                 }
             }
         }
@@ -57,7 +69,7 @@ pub fn list_dir(command: &Command) {
             into_iter().
             filter_map(|x| x.ok())
         {
-            println!("{}", entry.path().display());
+            println!("{}", entry.path().strip_prefix(&path_buf).unwrap().display());
         }
     };
 }

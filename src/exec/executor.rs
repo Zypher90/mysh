@@ -31,7 +31,7 @@ fn echo_builtin(command : &Command) {
     if let Some(file_path) = &command.file_stdout {
         let output = command.argv.
             get(1);
-        let mut file: std::io::Result<File>;
+        let file: std::io::Result<File>;
         if(command.append) {
             file = OpenOptions::new().append(true).open(file_path);
         }else{
@@ -51,18 +51,28 @@ fn echo_builtin(command : &Command) {
 }
 
 fn execute_external(command: &mut Command) {
-    let program = resolve_path(&command.argv[0]);
-    let mut child = match program {
+    let path = resolve_path(&command.argv[0]);
+    let mut child = match path {
         Some(t) => {
-            std::process::Command::new(&t)
-                .args(&command.argv[1..])
-                .spawn()
-                .expect("Failed to spawn command")
+            let ext = t.extension().and_then(|s| s.to_str()).unwrap_or("").to_uppercase();
+            match ext.as_str() {
+                ".BAT" | ".CMD" => {
+                    std::process::Command::new("cmd")
+                    .arg("/C").args(&command.argv[1..])
+                    .spawn()
+                    .expect("Failed to spawn command")
+                },
+                _ => {
+                    std::process::Command::new(t)
+                        .args(&command.argv[1..])
+                        .spawn()
+                        .expect("Failed to spawn command")
+                }
+            }
         }
         None => {
-            command.argv.insert(0, "/C".to_string());
             std::process::Command::new("cmd")
-                .args(&command.argv[..])
+                .arg("/C").args(&command.argv[..])
                 .spawn()
                 .expect("Failed to spawn command")
         }
